@@ -1,0 +1,23 @@
+# Optional containerised services for local development.
+# Postgres is exposed on 5433 so it does not clash with a Homebrew Postgres on 5432.
+#   docker compose -f infrastructure/docker-compose.yml up -d
+name: melo
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: melo
+      POSTGRES_PASSWORD: melo_dev_password
+      POSTGRES_DB: melo_dev
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U melo -d melo_dev"]
+      interval: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
